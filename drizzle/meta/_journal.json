@@ -1,0 +1,27 @@
+{
+  "version": "5",
+  "dialect": "pg",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "5",
+      "when": 1710302894309,
+      "tag": "0000_charming_maggott",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "5",
+      "when": 1710553559072,
+      "tag": "0001_brief_network",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "5",
+      "when": 1710554797858,
+      "tag": "0002_little_red_skull",
+      "breakpoints": true
+    }
+  ]
+}
