@@ -36,12 +36,14 @@ router.post('/', jsonParser, async (req: Request<SessionPostBody>, res: Response
                 }
                 req.session.accountId = dbAccount[0].id;
 
-                req.session.save((err) => {
-                    if (err) {
-                        throw new Error('req.session.save error');
-                    }
-                    res.status(200).send({ message: 'TestMessage' });
-                });
+                res.status(200).send({ message: 'TestMessage' });
+
+                // https://www.npmjs.com/package/express-session#sessionsavecallback
+                // req.session.save((err) => {
+                //     if (err) {
+                //         throw new Error('req.session.save error');
+                //     }
+                // });
             });
         } else {
             throw new Error('Invalid password.');
@@ -53,7 +55,6 @@ router.post('/', jsonParser, async (req: Request<SessionPostBody>, res: Response
 
 // middleware to test if authenticated
 const isAuthenticated = (req: Request, res: Response, next: NextFunction) => {
-    console.log('req.session.accountId:', req.session.accountId);
     if (req.session.accountId) {
         next();
     } else {
@@ -63,7 +64,6 @@ const isAuthenticated = (req: Request, res: Response, next: NextFunction) => {
 }
 
 router.get('/', isAuthenticated, async (req: Request, res: Response, next: NextFunction) => {
-    console.log('req.session:', req.session);
     console.log('we are auth!');
     res.send('AUTH!!!!!!!!!');
 });

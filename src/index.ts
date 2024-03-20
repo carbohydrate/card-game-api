@@ -12,7 +12,7 @@ const sessionOptions = {
     }),
     secret: 'keyboard cat',
     resave: false,
-    saveUninitialized: true,
+    saveUninitialized: false,
     cookie: { maxAge: 600000 },
 }
 
