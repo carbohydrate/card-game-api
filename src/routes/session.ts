@@ -4,6 +4,7 @@ import bcrypt from 'bcrypt';
 import { db } from '../db';
 import { account } from '../../db/schema/account';
 import { eq } from 'drizzle-orm';
+import { getLoginInfo } from '../controllers/get-login';
 
 const router = express.Router();
 const jsonParser = bodyParser.json();
@@ -30,13 +31,16 @@ router.post('/', jsonParser, async (req: Request<SessionPostBody>, res: Response
         const match = await bcrypt.compare(req.body.password, dbAccount[0].password);
 
         if (match) {
-            req.session.regenerate((err) => {
+            const accountId = dbAccount[0].id
+
+            req.session.regenerate(async (err) => {
                 if (err) {
                     throw new Error('req.session.regenerate error');
                 }
-                req.session.accountId = dbAccount[0].id;
+                req.session.accountId = accountId;
 
-                res.status(200).send({ message: 'TestMessage' });
+                const loginInfo = await getLoginInfo(accountId);
+                res.status(200).send(loginInfo);
 
                 // https://www.npmjs.com/package/express-session#sessionsavecallback
                 // req.session.save((err) => {
