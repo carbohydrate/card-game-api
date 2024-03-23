@@ -1,0 +1,19 @@
+meta {
+  name: createSession
+  type: http
+  seq: 2
+}
+
+post {
+  url: http://localhost:3000/session
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "username": "{{user}}",
+    "password": "{{pass}}"
+  }
+  
+}
