@@ -57,19 +57,4 @@ router.post('/', jsonParser, async (req: Request<SessionPostBody>, res: Response
     }
 });
 
-// middleware to test if authenticated
-const isAuthenticated = (req: Request, res: Response, next: NextFunction) => {
-    if (req.session.accountId) {
-        next();
-    } else {
-        throw new Error('User not authenticated.');
-        // return next(new Error('User not authenticated.'));
-    }
-}
-
-router.get('/', isAuthenticated, async (req: Request, res: Response, next: NextFunction) => {
-    console.log('we are auth!');
-    res.send('AUTH!!!!!!!!!');
-});
-
 export const sessionRoute = router;

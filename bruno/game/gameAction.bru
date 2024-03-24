@@ -1,0 +1,18 @@
+meta {
+  name: gameAction
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{url}}/game
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "abc": 123
+  }
+  
+}

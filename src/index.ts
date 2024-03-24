@@ -5,6 +5,8 @@ import { baseRoute } from './routes/base';
 import { accountRoute } from './routes/account';
 import { sessionRoute } from './routes/session';
 import { errorHandler } from './middleware/error-handler';
+import { isAuthenticated } from './middleware/is-authenticated';
+import { gameRoute } from './routes/game';
 
 const sessionOptions = {
     store: new (require('connect-pg-simple')(session))({
@@ -30,6 +32,7 @@ const start = () => {
     app.use('/', baseRoute);
     app.use('/account', accountRoute);
     app.use('/session', sessionRoute);
+    app.use('/game', isAuthenticated, gameRoute);
 
     // errorHandler last
     app.use(errorHandler);
