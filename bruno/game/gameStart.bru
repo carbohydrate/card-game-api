@@ -1,0 +1,17 @@
+meta {
+  name: gameStart
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{url}}/game/start
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "playerId": 2
+  }
+}

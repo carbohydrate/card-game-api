@@ -11,5 +11,8 @@ export const getLoginInfo = async (accountId: number) => {
     const dbDeckCards = await db.select().from(decks).innerJoin(deckCard, eq(decks.id, deckCard.decksId));
     console.log('dbDeckCards:', dbDeckCards);
 
-    return dbDecks;
+    return {
+        playerId: accountId,
+        decks: dbDecks,
+    }
 }
