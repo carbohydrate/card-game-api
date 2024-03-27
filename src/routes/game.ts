@@ -22,7 +22,14 @@ router.post('/start', jsonParser, async (req: Request<void, void, GameStartPostB
 
         res.status(202).send({ gameId: gameId });
     } else {
-        res.status(200).send({ gameId: dbGames[0].id });
+        // player started game, left and started again before a 2nd player was found
+        if (req.body.playerId === dbGames[0].player1) {
+            res.status(202).send({ gameId: dbGames[0].id });
+        } else {
+            // update player2
+            await db.update(games).set({ player2: req.body.playerId }).where(eq(games.id, dbGames[0].id));
+            res.status(200).send({ gameId: dbGames[0].id });
+        }
     }
 });
 
@@ -38,6 +45,7 @@ router.get('/start/:gameId', async (req: Request<{ gameId: number }>, res: Respo
     );
 
     if (dbGames.length) {
+        await db.update(games).set({ status: 2 }).where(eq(games.id, dbGames[0].id));
         res.status(200).send();
     } else {
         res.status(204).send();
