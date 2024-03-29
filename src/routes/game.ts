@@ -1,11 +1,10 @@
 import express, { NextFunction, Request, Response } from 'express';
-import bodyParser from 'body-parser';
 import { db } from '../db';
 import { games } from '../../db/schema/games';
 import { and, eq, isNotNull } from 'drizzle-orm';
 
 const router = express.Router();
-const jsonParser = bodyParser.json();
+const jsonParser = express.json();;
 
 interface GameStartPostBody {
     playerId: number;

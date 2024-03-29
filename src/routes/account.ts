@@ -1,12 +1,11 @@
 import express, { Request, Response } from 'express';
-import bodyParser from 'body-parser';
 import bcrypt from 'bcrypt';
 import { db } from '../db';
 import { account } from '../../db/schema/account';
 import { eq } from 'drizzle-orm';
 
 const router = express.Router();
-const jsonParser = bodyParser.json();
+const jsonParser = express.json();
 
 interface AccountPostBody {
     username: string;
@@ -14,6 +13,7 @@ interface AccountPostBody {
 }
 
 router.post('/', jsonParser, async (req: Request<AccountPostBody>, res: Response) => {
+    console.log('req:', req);
     const dbAccount = await db.select().from(account).where(eq(account.username, req.body.username));
 
     if (!dbAccount.length) {

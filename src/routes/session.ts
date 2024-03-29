@@ -1,5 +1,4 @@
 import express, { NextFunction, Request, Response } from 'express';
-import bodyParser from 'body-parser';
 import bcrypt from 'bcrypt';
 import { db } from '../db';
 import { account } from '../../db/schema/account';
@@ -7,7 +6,7 @@ import { eq } from 'drizzle-orm';
 import { getLoginInfo } from '../controllers/get-login';
 
 const router = express.Router();
-const jsonParser = bodyParser.json();
+const jsonParser = express.json();
 
 interface SessionPostBody {
     username: string;
