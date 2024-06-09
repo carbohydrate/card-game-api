@@ -2,6 +2,7 @@ import express, { NextFunction, Request, Response } from 'express';
 import { db } from '../db';
 import { games } from '../../db/schema/games';
 import { and, eq, isNotNull } from 'drizzle-orm';
+import { getGameState, startGame } from '../controllers/game';
 
 const router = express.Router();
 const jsonParser = express.json();;
@@ -19,6 +20,8 @@ router.post('/start', jsonParser, async (req: Request<void, void, GameStartPostB
             player1: req.body.playerId,
         }).returning({ id: games.id }))[0].id;
 
+        startGame(gameId);
+
         res.status(202).send({ gameId: gameId });
     } else {
         // player started game, left and started again before a 2nd player was found
@@ -33,12 +36,12 @@ router.post('/start', jsonParser, async (req: Request<void, void, GameStartPostB
 });
 
 // player waiting, check if a player as been found...
-router.get('/start/:gameId', async (req: Request<{ gameId: number }>, res: Response, next: NextFunction) => {
+router.get('/start/:gameId', async (req: Request<{ gameId: string }>, res: Response, next: NextFunction) => {
     const gameId = req.params.gameId;
     const dbGames = await db.select().from(games).where(
         and(
             eq(games.status, 1),
-            eq(games.id, gameId),
+            eq(games.id, Number(gameId)),
             isNotNull(games.player2),
         )
     );
@@ -49,6 +52,10 @@ router.get('/start/:gameId', async (req: Request<{ gameId: number }>, res: Respo
     } else {
         res.status(204).send();
     }
+});
+
+router.get('/state/:gameId', async (req: Request<{ gameId: string }>, res: Response, next: NextFunction) => {
+    res.status(200).send(getGameState(Number(req.params.gameId)));
 });
 
 interface GamePostBody {
