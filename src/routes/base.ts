@@ -1,14 +1,23 @@
 import express, { NextFunction, Request, Response } from 'express';
-import { db } from '../db';
-import { set } from '../../db/schema/set';
+import { dbQuery } from '../db';
 
 const router = express.Router();
 
+const testQuery = `
+SELECT *
+FROM sets
+`;
+
+interface DbSet {
+    id: number;
+    name: string;
+}
+
 router.get('/', async (req: Request, res: Response, next: NextFunction) => {
-    console.time('postgres-js');
-    const dbSet = await db.select().from(set);
-    console.log('dbSet:', dbSet);
-    console.timeEnd('postgres-js');
+    console.time('pg');
+    const dbSet = await dbQuery<DbSet>(testQuery);
+    console.log('dbSet:', dbSet.rows);
+    console.timeEnd('pg');
 
     res.status(200).send('Hello World');
 });

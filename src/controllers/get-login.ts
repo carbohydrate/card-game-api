@@ -1,4 +1,4 @@
-import { dbQuery } from '../db/index';
+import { dbQuery } from '../db';
 
 const dbDecksQuery = `
 SELECT id, account_id, name

@@ -1,4 +1,4 @@
-import { dbQuery } from '../db/index';
+import { dbQuery } from '../db';
 
 const query = `
 SELECT id, password

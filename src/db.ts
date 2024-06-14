@@ -1,5 +1,10 @@
-import { drizzle } from 'drizzle-orm/postgres-js';
-import postgres from 'postgres';
+import pg, { QueryResultRow } from 'pg';
 
-const queryClient = postgres(process.env.DATABASE_URL);
-export const db = drizzle(queryClient);
+const { Pool } = pg;
+
+const pool = new Pool();
+
+// if you need a transaction, do not use the pool
+export const dbQuery = <T>(text: string, params?: any, callback?: () => void) => {
+    return pool.query<T extends QueryResultRow ? T : any>(text, params);
+};

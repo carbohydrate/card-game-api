@@ -1,8 +1,6 @@
 import express, { NextFunction, Request, Response } from 'express';
-import { db } from '../db';
-import { games } from '../../db/schema/games';
-import { and, eq, isNotNull } from 'drizzle-orm';
-import { getGameState, startGame } from '../controllers/game';
+import { checkPlayerFound, createNewGame, getGameState, getGamesByStatus, startGame, updateAndStartGame, updateGameStatus } from '../controllers/game';
+import { GameStatus } from '../constants';
 
 const router = express.Router();
 const jsonParser = express.json();;
@@ -13,24 +11,22 @@ interface GameStartPostBody {
 
 router.post('/start', jsonParser, async (req: Request<void, void, GameStartPostBody>, res: Response, next: NextFunction) => {
     // check if anyone waiting
-    const dbGames = await db.select().from(games).where(eq(games.status, 1));
+    const dbGames = await getGamesByStatus(GameStatus.Waiting);
     // if no, create record in table and wait
-    if (!dbGames.length) {
-        const gameId = (await db.insert(games).values({
-            player1: req.body.playerId,
-        }).returning({ id: games.id }))[0].id;
+    if (!dbGames.rowCount) {
+        const gameId = await createNewGame(req.body.playerId);
 
         startGame(gameId);
 
         res.status(202).send({ gameId: gameId });
     } else {
         // player started game, left and started again before a 2nd player was found
-        if (req.body.playerId === dbGames[0].player1) {
-            res.status(202).send({ gameId: dbGames[0].id });
+        if (req.body.playerId === dbGames.rows[0].player1) {
+            res.status(202).send({ gameId: dbGames.rows[0].id });
         } else {
             // update player2
-            await db.update(games).set({ player2: req.body.playerId }).where(eq(games.id, dbGames[0].id));
-            res.status(200).send({ gameId: dbGames[0].id });
+            await updateAndStartGame(req.body.playerId, dbGames.rows[0].id);
+            res.status(200).send({ gameId: dbGames.rows[0].id });
         }
     }
 });
@@ -38,16 +34,10 @@ router.post('/start', jsonParser, async (req: Request<void, void, GameStartPostB
 // player waiting, check if a player as been found...
 router.get('/start/:gameId', async (req: Request<{ gameId: string }>, res: Response, next: NextFunction) => {
     const gameId = req.params.gameId;
-    const dbGames = await db.select().from(games).where(
-        and(
-            eq(games.status, 1),
-            eq(games.id, Number(gameId)),
-            isNotNull(games.player2),
-        )
-    );
+    const dbGames = await checkPlayerFound(GameStatus.Waiting, Number(gameId));
 
-    if (dbGames.length) {
-        await db.update(games).set({ status: 2 }).where(eq(games.id, dbGames[0].id));
+    if (dbGames.rowCount) {
+        await updateGameStatus(GameStatus.Started, dbGames.rows[0].id);
         res.status(200).send();
     } else {
         res.status(204).send();
