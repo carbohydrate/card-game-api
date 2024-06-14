@@ -1,8 +1,6 @@
 import express, { Request, Response } from 'express';
 import bcrypt from 'bcrypt';
-import { db } from '../db';
-import { account } from '../../db/schema/account';
-import { eq } from 'drizzle-orm';
+import { createAccount, getAccountByUsername } from '../controllers/account';
 
 const router = express.Router();
 const jsonParser = express.json();
@@ -13,17 +11,13 @@ interface AccountPostBody {
 }
 
 router.post('/', jsonParser, async (req: Request<AccountPostBody>, res: Response) => {
-    console.log('req:', req);
-    const dbAccount = await db.select().from(account).where(eq(account.username, req.body.username));
+    const dbAccount = await getAccountByUsername(req.body.username);
 
-    if (!dbAccount.length) {
+    if (!dbAccount.rows.length) {
         const salt = await bcrypt.genSalt(10);
         const hash = await bcrypt.hash(req.body.password, salt);
 
-        await db.insert(account).values({
-            username: req.body.username,
-            password: hash,
-        });
+        await createAccount(req.body.username, hash);
 
         res.status(201).send({ message: 'Account Created!' });
     } else {
