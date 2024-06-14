@@ -1,4 +1,4 @@
-import express, { NextFunction, Request, Response } from 'express';
+import express from 'express';
 import session from 'express-session';
 import { consoleLogger } from './middleware/console-logger';
 import { baseRoute } from './routes/base';
@@ -7,6 +7,7 @@ import { sessionRoute } from './routes/session';
 import { errorHandler } from './middleware/error-handler';
 import { isAuthenticated } from './middleware/is-authenticated';
 import { gameRoute } from './routes/game';
+import { cors } from './middleware/cors';
 
 const sessionOptions = {
     store: new (require('connect-pg-simple')(session))({
@@ -20,8 +21,11 @@ const sessionOptions = {
 
 const start = () => {
     const app = express();
-    app.use(session(sessionOptions));
+
     app.use(consoleLogger);
+    app.use(cors);
+
+    app.use(session(sessionOptions));
 
     // parse application/x-www-form-urlencoded
     // app.use(bodyParser.urlencoded({ extended: false }));
