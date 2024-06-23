@@ -2,6 +2,7 @@ import express, { NextFunction, Request, Response } from 'express';
 import bcrypt from 'bcrypt';
 import { getLoginInfo } from '../controllers/get-login';
 import { getAccountByUsername } from '../controllers/account';
+import { isAuthenticated } from '../middleware/is-authenticated';
 
 const router = express.Router();
 const jsonParser = express.json();
@@ -49,6 +50,11 @@ router.post('/', jsonParser, async (req: Request<void, void, SessionPostBody>, r
     } else {
         throw new Error('Account not found');
     }
+});
+
+router.get('/', isAuthenticated, async (req: Request, res: Response) => {
+    res.status(200).send(true);
+
 });
 
 export const sessionRoute = router;
