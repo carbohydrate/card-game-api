@@ -8,7 +8,7 @@ import { errorHandler } from './middleware/error-handler';
 import { isAuthenticated } from './middleware/is-authenticated';
 import { gameRoute } from './routes/game';
 import { cors } from './middleware/cors';
-import { cardRoute } from './routes/card';
+import { cardsRoute } from './routes/cards';
 
 const sessionOptions = {
     store: new (require('connect-pg-simple')(session))({
@@ -17,7 +17,7 @@ const sessionOptions = {
     secret: 'keyboard cat',
     resave: false,
     saveUninitialized: false,
-    cookie: { maxAge: 600000 },
+    cookie: { maxAge: 86400000 }, // 24 hours
 }
 
 const start = () => {
@@ -37,7 +37,7 @@ const start = () => {
     app.use('/', baseRoute);
     app.use('/account', accountRoute);
     app.use('/session', sessionRoute);
-    app.use('/card', isAuthenticated, cardRoute);
+    app.use('/cards', isAuthenticated, cardsRoute);
     app.use('/game', isAuthenticated, gameRoute);
 
     // errorHandler last

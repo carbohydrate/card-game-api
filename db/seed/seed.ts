@@ -16,7 +16,7 @@ const seed = async () => {
     }
 
     for (const card of cards) {
-        await dbQuery(`INSERT INTO cards VALUES (DEFAULT, ${card.set_id}, '${card.name}');`);
+        await dbQuery(`INSERT INTO cards VALUES (DEFAULT, ${card.set_id}, '${card.name}', ${card.attack}, ${card.health});`);
     }
 
     // console.log('abc123whendoesthishappen');

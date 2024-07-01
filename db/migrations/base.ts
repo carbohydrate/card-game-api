@@ -34,7 +34,9 @@ export const migration = () => {
         CREATE TABLE cards (
             id integer PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
             set_id integer NOT NULL REFERENCES sets(id),
-            name text NOT NULL
+            name text NOT NULL,
+            attack smallint NOT NULL,
+            health smallint NOT NULL
         );
 
         CREATE TABLE deck_card (

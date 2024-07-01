@@ -25,4 +25,4 @@ router.get('/', async (req: Request, res: Response) => {
     }
 });
 
-export const cardRoute = router;
+export const cardsRoute = router;
